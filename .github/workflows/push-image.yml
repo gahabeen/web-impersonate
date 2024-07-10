@@ -53,17 +53,18 @@ jobs:
 
     # Create a new builder instance
     - name: Create builder
-      run: docker buildx create --use
+      run: docker buildx create --use --name builder
 
     # Inspect the builder
     - name: Inspect builder
-      run: docker buildx inspect --bootstrap
+      run: docker buildx inspect --bootstrap --builder builder
 
     # Build the Docker image for multiple platforms
     - name: Build and push
       run: |-
         docker buildx build \
-          --platform linux/amd64,linux/arm64 \
+          --builder builder \
+          --platform linux/amd64 \
           --tag "$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:${{ env.COMMIT_COUNT_TAG }}" \
           --tag "$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:latest" \
           --cache-from=type=registry,ref=$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME_CACHE \
