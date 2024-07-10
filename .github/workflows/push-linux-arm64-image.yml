@@ -1,4 +1,4 @@
-name: 'Push image'
+name: 'Push linux/arm64 image'
 
 env:
   PROJECT_ID: ${{ secrets.PROJECT_ID }}
@@ -64,7 +64,7 @@ jobs:
       run: |-
         docker buildx build \
           --builder builder \
-          --platform linux/amd64 \
+          --platform linux/arm64 \
           --tag "$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:${{ env.COMMIT_COUNT_TAG }}" \
           --tag "$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:latest" \
           --cache-from=type=registry,ref=$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME_CACHE \
