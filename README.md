@@ -28,6 +28,7 @@ All variables are optional and can be set in the docker run command via ARGS.
 
 | Variable | Description | Default | Options |
 | --- | --- | --- | --- |
+| CMD_TO_RUN | Command to run | tail -f /dev/null | - |
 | NODE_VERSION | Node image to use | 20.15.0 | - |
 | BUN_VERSION | Bun version to use | bun-v1.1.18 | - |
 | CURL_BROWSER_TYPE | Browser type to use with curl-impersonate | chrome | chrome, firefox |

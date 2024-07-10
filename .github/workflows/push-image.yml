@@ -4,6 +4,7 @@ env:
   PROJECT_ID: ${{ secrets.PROJECT_ID }}
   GAR_LOCATION: us-east1
   IMAGE_NAME: web-impersonate
+  IMAGE_NAME_CACHE: web-impersonate-cache
   REPOSITORY: web-impersonate
 
 on:
@@ -65,5 +66,7 @@ jobs:
           --platform linux/amd64,linux/arm64 \
           --tag "$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:${{ env.COMMIT_COUNT_TAG }}" \
           --tag "$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:latest" \
+          --cache-from=type=registry,ref=$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME_CACHE \
+          --cache-to=type=registry,ref=$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME_CACHE,mode=max \
           --push \
           .
