@@ -9,7 +9,7 @@ if [ "$START_XVBF" = true ]; then
 
   # Ensure that Xvfb and Fluxbox have started before proceeding
   sleep 2
-elif
+else
   echo "Xvfb server disabled."
 fi
 
@@ -20,7 +20,7 @@ if [ "$START_VNC" = true ]; then
 
   # Ensure VNC server has started before proceeding
   sleep 2
-elif
+else
   echo "VNC server disabled."
 fi
 
