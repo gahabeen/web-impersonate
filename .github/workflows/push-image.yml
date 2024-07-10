@@ -64,5 +64,6 @@ jobs:
         docker buildx build \
           --platform linux/amd64,linux/arm64 \
           --tag "$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:${{ env.COMMIT_COUNT_TAG }}" \
+          --tag "$GAR_LOCATION-docker.pkg.dev/$PROJECT_ID/$REPOSITORY/$IMAGE_NAME:latest" \
           --push \
           .

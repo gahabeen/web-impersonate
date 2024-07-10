@@ -1,10 +1,9 @@
+ARG NODE_VERSION=20.15.0
+ARG NODE_IMAGE="node:${NODE_VERSION}-bookworm"
+
 FROM python:3.11-slim-bookworm AS curl-impersonate
 
 ARG TARGETPLATFORM
-ARG BUILDPLATFORM
-
-ARG NODE_VERSION=20.15.0
-ENV NODE_VERSION=${NODE_VERSION}
 
 WORKDIR /build
 
@@ -119,17 +118,11 @@ RUN cp -d /build/install/lib/libcurl-impersonate* /build/out && \
 
 RUN ! (ldd ./out/curl-impersonate | grep -q -e nghttp2 -e brotli -e ssl -e crypto)
 
-# Copy wrapper scripts
 COPY curl-impersonate/${CURL_BROWSER_TYPE}/curl_* out/
 RUN chmod +x out/curl_*
 
+FROM ${NODE_IMAGE} AS playwright
 
-# ------------------------------------------------------------------------------
-
-# Create a final, minimal image with the compiled binaries only.
-FROM node:${NODE_VERSION}-bookworm AS playwright
-
-# Avoid warnings by switching to noninteractive for the build process
 ENV DEBIAN_FRONTEND=noninteractive
 ENV USER=root
 
@@ -138,8 +131,19 @@ RUN apt-get update && \
     apt-get install --no-install-recommends -y wget curl gnupg2 wget gnupg ca-certificates lsb-release x11vnc xvfb fluxbox && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-ARG BUILDPLATFORM
 ARG TARGETPLATFORM
+
+RUN if [ -z "$TARGETPLATFORM" ]; then \
+        ARCH=$(uname -m); \
+        if [ "$ARCH" = "x86_64" ]; then \
+            TARGETPLATFORM="linux/amd64"; \
+        elif [ "$ARCH" = "aarch64" ]; then \
+            TARGETPLATFORM="linux/arm64"; \
+        else \
+            echo "Unsupported architecture: $ARCH"; \
+            exit 1; \
+        fi; \
+    fi
 
 # Install OpenResty
 RUN wget -O - https://openresty.org/package/pubkey.gpg | apt-key add -
@@ -156,7 +160,7 @@ RUN apt-get update && \
     apt-cache madison openresty
 
 RUN apt-get update && \
-    apt-get install -y openresty && \
+    apt-get install --no-install-recommends -y openresty && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ENV PATH="/usr/local/openresty/bin:$PATH"

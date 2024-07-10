@@ -1,15 +1,24 @@
 Web Impersonate
 ---
-Packed-up docker images to run requests impersonating browsers.
+Your neal ideal base image to automate the web
+
+
+**USAGE**
+1. Directly plug it into your dockerfile
+`FROM us-east1-docker.pkg.dev/gahabeen/web-impersonate/web-impersonate:latest AS base`
+
 
 **INCLUDES**
+
 - node 20.15.0
 - bun 1.1.18
 - curl-impersonate
 - playwright
 - openresty (nginx)
+- vnc (for debugging)
 
 **PLATFORMS**
+
 - linux/amd64
 - linux/arm64 (like for Mac M series)
 
@@ -19,8 +28,8 @@ All variables are optional and can be set in the docker run command via ARGS.
 
 | Variable | Description | Default | Options |
 | --- | --- | --- | --- |
-| NODE_VERSION | Node image to use | 20.15.0 | 20.15.0 |
-| BUN_VERSION | Bun version to use | bun-v1.1.18 | bun-v1.1.18 |
+| NODE_VERSION | Node image to use | 20.15.0 | - |
+| BUN_VERSION | Bun version to use | bun-v1.1.18 | - |
 | CURL_BROWSER_TYPE | Browser type to use with curl-impersonate | chrome | chrome, firefox |
 | PLAYWRIGHT_VERSION | Playwright version to use | 1.45.1 | - |
 | PLAYWRIGHT_BROWSERS_PATH | Playwright browsers path | /root/pw-browsers | - |
@@ -39,13 +48,3 @@ All variables are optional and can be set in the docker run command via ARGS.
 | NGHTTP2_VERSION | NGHTTP2 version to use | 1.56.0 | - |
 | NGHTTP2_URL | NGHTTP2 URL to download from | [link](https://github.com/nghttp2/nghttp2/releases/download/v1.56.0/nghttp2-1.56.0.tar.bz2) | - |
 | CURL_VERSION | curl version to use | curl-8.1.1 | - |
-
-
-**Usage**
-
-```bash
-docker run -it --rm \
-  -e DISPLAY=:99 \
-  -e SCREEN_RESOLUTION=1920x1080 \
-  -e SCREEN_DEPTH=24 \
-  -e XVFB_WHD=1920x1080x24 \
