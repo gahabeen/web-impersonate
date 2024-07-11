@@ -1,17 +1,25 @@
 Web Impersonate
 ---
-Your neal ideal base image to automate the web
+Base image to automate the web
 
+**Add this to your dockerfile**
+`FROM us-east1-docker.pkg.dev/gahabeen/web-impersonate/web-impersonate:latest AS base`
 
 **Get started**
-1. Directly plug it into your dockerfile: `FROM us-east1-docker.pkg.dev/gahabeen/web-impersonate/web-impersonate:latest AS base`
-2. Build your own image: `make build`
-3. Run the image by default: `make run`
-4. Test the image with NGINX: `make run-nginx`
+```bash
+# Build your own image
+make build
+
+# Run the image by default
+make run
+
+# Test the image with NGINX
+make run-nginx
+```
 
 **What's included**
 - node: 20.15.0
-- pnpm
+- pnpm 9.5.0 (package manager)
 - curl-impersonate: 0.6.1-chrome-slim-bullseye
 - playwright: 1.45.1
 - lavinmq: latest
