@@ -4,7 +4,6 @@ ARG PLAYWRIGHT_VERSION="1.45.1"
 ARG NODE_IMAGE="node:${NODE_VERSION}-bookworm"
 ARG PLAYWRIGHT_IMAGE="mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-noble"
 ARG PLAYWRIGHT_BROWSERS_PATH="/home/pw-browsers"
-ARG PNPM_VERSION="9.5.0"
 
 FROM ${PLAYWRIGHT_IMAGE} AS playwright
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
@@ -22,13 +21,12 @@ RUN apt-get update && \
 ARG TARGETPLATFORM
 ARG BUILDARCH
 
-
 # Install curl-impersonate
 ARG CURL_IMPERSONATE_VERSION="0.6.1"
 RUN \
-    if [ "$TARGETPLATFORM" = 'linux/arm64' ] || [ "$BUILDARCH" = 'arm64' ]; then CURL_IMPERSONATE_ARCH="aarch64"; else CURL_IMPERSONATE_ARCH="x86_64"; fi && \
-    CURL_IMPERSONATE_FILENAME="curl-impersonate-v${CURL_IMPERSONATE_VERSION}.v$CURL_IMPERSONATE_ARCH-linux-gnu.tar.gz" && \
-    curl -L -o /tmp/$CURL_IMPERSONATE_FILENAME "https://github.com/lwthiker/curl-impersonate/releases/download/${CURL_IMPERSONATE_VERSION}/$CURL_IMPERSONATE_FILENAME" && \
+    if [ "$TARGETPLATFORM" = 'linux/arm64' ]; then CURL_IMPERSONATE_ARCH="aarch64"; else CURL_IMPERSONATE_ARCH="x86_64"; fi && \
+    CURL_IMPERSONATE_FILENAME="curl-impersonate-v${CURL_IMPERSONATE_VERSION}.${CURL_IMPERSONATE_ARCH}-linux-gnu.tar.gz" && \
+    curl -L -o /tmp/$CURL_IMPERSONATE_FILENAME "https://github.com/lwthiker/curl-impersonate/releases/download/v${CURL_IMPERSONATE_VERSION}/${CURL_IMPERSONATE_FILENAME}" && \
     mkdir -p /opt/curl-impersonate && \
     tar -xzf /tmp/$CURL_IMPERSONATE_FILENAME -C /opt/curl-impersonate && \
     rm /tmp/$CURL_IMPERSONATE_FILENAME
@@ -37,6 +35,8 @@ ENV PATH="/opt/curl-impersonate:$PATH"
 
 # Install pnpm
 RUN corepack enable
+
+ARG PNPM_VERSION="9.5.0"
 ENV PNPM_VERSION=${PNPM_VERSION}
 RUN curl -fsSL https://get.pnpm.io/install.sh | ENV="$HOME/.shrc" SHELL="$(which sh)" sh -
 ENV PNPM_HOME="/pnpm"
@@ -44,8 +44,7 @@ ENV PATH="$PNPM_HOME:$PATH"
 
 # Install openresty
 RUN curl -L https://openresty.org/package/pubkey.gpg | apt-key add -
-RUN if [ "$TARGETPLATFORM" = 'linux/arm64' ] || [ "$BUILDARCH" = 'arm64' ]; then OPENRESTY_PATH="/arm64/debian"; else OPENRESTY_PATH="/debian"; fi && \
-    echo "deb http://openresty.org/package$OPENRESTY_PATH $(lsb_release -sc) openresty" > /etc/apt/sources.list.d/openresty.list;
+RUN if [ "$TARGETPLATFORM" = 'linux/arm64' ]; then OPENRESTY_PATH="/arm64/debian"; else OPENRESTY_PATH="/debian"; fi && echo "deb http://openresty.org/package${OPENRESTY_PATH} $(lsb_release -sc) openresty" > /etc/apt/sources.list.d/openresty.list;
 
 # Install lavinmq
 RUN curl -fsSL https://packagecloud.io/cloudamqp/lavinmq/gpgkey | gpg --dearmor -o /usr/share/keyrings/lavinmq.gpg
