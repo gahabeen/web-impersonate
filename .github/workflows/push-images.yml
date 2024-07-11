@@ -4,7 +4,6 @@ env:
   PROJECT_ID: ${{ secrets.PROJECT_ID }}
   REGION: ${{ secrets.REGION }}
   IMAGE_NAME: web-impersonate
-  IMAGE_NAME_CACHE: web-impersonate-cache
   REPOSITORY: web-impersonate
 
 on:
@@ -15,7 +14,7 @@ on:
 
 jobs:
   setup-build-publish-deploy:
-    name: Push images
+    name: Push image
     runs-on: ubuntu-latest
 
     permissions:
@@ -50,5 +49,3 @@ jobs:
             ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ env.COMMIT_COUNT_TAG }}
             ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:latest
           platforms: linux/amd64
-          cache-from: type=registry,ref=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME_CACHE }}
-          cache-to: type=registry,ref=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME_CACHE }},mode=max
