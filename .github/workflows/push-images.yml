@@ -10,6 +10,11 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'README.md'
+      - 'Mafefile'
+      - 'examples/**'
+
   workflow_dispatch:
 
 jobs:

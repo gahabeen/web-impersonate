@@ -1,9 +1,10 @@
 Web Impersonate
 ---
 Base image to automate the web
-Available for linux/amd64 and linux/arm64
 
 **Start your project with a prebuilt image**
+
+Available for `linux/amd64` or `linux/arm64`
 
 ```dockerfile
 FROM us-east1-docker.pkg.dev/gahabeen/web-impersonate/web-impersonate:latest AS base
