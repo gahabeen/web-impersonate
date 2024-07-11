@@ -17,8 +17,15 @@ ENV USER=root
 
 # Install necessary packages
 RUN apt-get update && \
-    apt-get install --no-install-recommends -y wget curl gnupg2 wget gnupg libnss3 nss-plugin-pem ca-certificates lsb-release x11vnc xvfb fluxbox && \
+    apt-get install --no-install-recommends -y curl gnupg2 gnupg libnss3 nss-plugin-pem ca-certificates lsb-release x11vnc xvfb fluxbox && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install pnpm
+RUN curl -fsSL https://get.pnpm.io/install.sh | sh -
+
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
 
 # Install OpenResty
 RUN curl -L https://openresty.org/package/pubkey.gpg | apt-key add -
@@ -28,10 +35,6 @@ RUN curl -fsSL https://packagecloud.io/cloudamqp/lavinmq/gpgkey | gpg --dearmor 
 RUN . /etc/os-release \
     && echo "deb [signed-by=/usr/share/keyrings/lavinmq.gpg] https://packagecloud.io/cloudamqp/lavinmq/${ID} ${VERSION_CODENAME} main" | tee /etc/apt/sources.list.d/lavinmq.list
 
-# Install Bun
-ARG BUN_VERSION=bun-v1.1.18
-RUN curl -fsSL https://bun.sh/install | bash -s "${BUN_VERSION}"
-
 RUN apt-get update && \
     apt-cache madison openresty
 
@@ -40,7 +43,6 @@ RUN apt-get update && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ENV PATH="/usr/local/openresty/bin:$PATH"
-ENV PATH="/root/.bun/bin:$PATH"
 
 RUN openresty -v
 
