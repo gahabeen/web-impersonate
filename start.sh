@@ -24,9 +24,25 @@ else
   echo "VNC server disabled."
 fi
 
-echo "Starting NGINX server..."
-openresty -g 'daemon off;' &
+if [ "$START_NGINX" = true ]; then
+  echo "Starting NGINX server..."
+  if [ -d "/mnt/nginx" ]; then
+    echo "Copying found nginx folder..."
+    cp -rv /mnt/nginx/* /usr/local/openresty/nginx
+  fi # Close the inner if statement
+
+  openresty -g 'daemon off;' &
+else
+  echo "NGINX server disabled."
+fi
+
+if [ "$START_LAVINMQ" = true ]; then
+  echo "Starting LavinMQ server..."
+  lavinmq &
+else
+  echo "LavinMQ server disabled."
+fi
 
 # Execute main command
-echo "Executing main command ${CMD_TO_RUN}"
-exec ${CMD_TO_RUN:-tail -f /dev/null}
+echo "Executing main command ${CMD}"
+exec ${CMD}

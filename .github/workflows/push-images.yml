@@ -1,4 +1,4 @@
-name: "Push images"
+name: "Push image to Google Artifact Registry"
 
 env:
   PROJECT_ID: ${{ secrets.PROJECT_ID }}
@@ -33,18 +33,13 @@ jobs:
 
       - name: Test env
         run: echo $COMMIT_COUNT_TAG
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
 
       - name: "Login to GAR"
         uses: "docker/login-action@v3"
         with:
           registry: "${{ env.REGION }}-docker.pkg.dev"
           username: _json_key
-          password: '${{ secrets.ACCESS_TOKEN }}'
+          password: "${{ secrets.ACCESS_TOKEN }}"
 
       - name: Build and push
         uses: docker/build-push-action@v4
@@ -54,6 +49,6 @@ jobs:
           tags: |
             ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ env.COMMIT_COUNT_TAG }}
             ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME }}:latest
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           cache-from: type=registry,ref=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME_CACHE }}
           cache-to: type=registry,ref=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.IMAGE_NAME_CACHE }},mode=max
