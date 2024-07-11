@@ -3,7 +3,6 @@ ARG NODE_VERSION="20.15.0"
 ARG PLAYWRIGHT_VERSION="1.45.1"
 ARG NODE_IMAGE="node:${NODE_VERSION}-bookworm"
 ARG PLAYWRIGHT_IMAGE="mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-noble"
-ARG PLAYWRIGHT_BROWSERS_PATH="/home/pw-browsers"
 
 FROM ${PLAYWRIGHT_IMAGE} AS playwright
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
@@ -60,9 +59,10 @@ RUN apt-get update && \
 
 ENV PATH="/usr/local/openresty/bin:$PATH"
 
-WORKDIR /usr/src/app
+COPY --from=playwright /ms-playwright /ms-playwright
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
-COPY --from=playwright ${PLAYWRIGHT_BROWSERS_PATH} ${PLAYWRIGHT_BROWSERS_PATH}
+WORKDIR /usr/src/app
 
 # Stage 3: Environment setup
 FROM node AS release
