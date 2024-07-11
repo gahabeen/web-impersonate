@@ -44,7 +44,7 @@ jobs:
         with:
           registry: "${{ env.REGION }}-docker.pkg.dev"
           username: _json_key
-          password: "${{ steps.auth.outputs.access_token }}"
+          password: '${{ secrets.ACCESS_TOKEN }}'
 
       - name: Build and push
         uses: docker/build-push-action@v4
