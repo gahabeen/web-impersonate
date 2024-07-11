@@ -26,6 +26,7 @@ Ex: `docker build --build-arg CMD="npm run dev" ...`
 | --- | --- | --- |
 | CMD | Command to run | tail -f /dev/null |
 | NODE_VERSION | Node image to use | 20.15.0 |
+| PNPM_VERSION | pnpm version | 9.5.0 |
 | CURL_IMPERSONATE_TAG | curl-impersonate image tag | 0.6.1-chrome-slim-bullseye |
 | PLAYWRIGHT_VERSION | Playwright version to use | 1.45.1 |
 | PLAYWRIGHT_BROWSERS_PATH | Playwright browsers path | /root/pw-browsers |

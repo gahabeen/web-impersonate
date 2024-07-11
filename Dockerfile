@@ -5,6 +5,7 @@ ARG NODE_IMAGE="node:${NODE_VERSION}-bookworm"
 ARG PLAYWRIGHT_IMAGE="mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-noble-amd64"
 ARG CURL_IMPERSONATE_TAG=0.6.1-chrome-slim-bullseye
 ARG PLAYWRIGHT_BROWSERS_PATH=/home/pw-browsers
+ARG PNPM_VERSION=9.5.0
 
 FROM lwthiker/curl-impersonate:${CURL_IMPERSONATE_TAG} AS curl-impersonate
 FROM ${PLAYWRIGHT_IMAGE} AS playwright
@@ -21,11 +22,11 @@ RUN apt-get update && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install pnpm
-RUN curl -fsSL https://get.pnpm.io/install.sh | sh -
-
+RUN corepack enable
+ENV PNPM_VERSION=${PNPM_VERSION}
+RUN curl -fsSL https://get.pnpm.io/install.sh | ENV="$HOME/.shrc" SHELL="$(which sh)" sh -
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
 
 # Install OpenResty
 RUN curl -L https://openresty.org/package/pubkey.gpg | apt-key add -
