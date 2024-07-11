@@ -1,11 +1,15 @@
 Web Impersonate
 ---
 Base image to automate the web
+Available for linux/amd64 and linux/arm64
 
-**Add this to your dockerfile**
-`FROM us-east1-docker.pkg.dev/gahabeen/web-impersonate/web-impersonate:latest AS base`
+**Start your project with a prebuilt image**
 
-**Get started**
+```dockerfile
+FROM us-east1-docker.pkg.dev/gahabeen/web-impersonate/web-impersonate:latest AS base
+```
+
+**Manually build your own image**
 ```bash
 # Build your own image
 make build
@@ -19,12 +23,12 @@ make run-nginx
 
 **What's included**
 - node: 20.15.0
-- pnpm 9.5.0 (package manager)
-- curl-impersonate: 0.6.1-chrome-slim-bullseye
+- pnpm: 9.5.0
+- curl-impersonate: 0.6.1
 - playwright: 1.45.1
 - lavinmq: latest
 - openresty (nginx)
-- vnc (for debugging)
+- vnc
 
 **Arguments**
 Pass the following arguments to the docker build command to customize the image.
@@ -35,7 +39,7 @@ Ex: `docker build --build-arg CMD="npm run dev" ...`
 | CMD | Command to run | tail -f /dev/null |
 | NODE_VERSION | Node image to use | 20.15.0 |
 | PNPM_VERSION | pnpm version | 9.5.0 |
-| CURL_IMPERSONATE_TAG | curl-impersonate image tag | 0.6.1-chrome-slim-bullseye |
+| CURL_IMPERSONATE_VERSION | curl-impersonate image tag | 0.6.1 |
 | PLAYWRIGHT_VERSION | Playwright version to use | 1.45.1 |
 | PLAYWRIGHT_BROWSERS_PATH | Playwright browsers path | /root/pw-browsers |
 

@@ -1,13 +1,11 @@
 # Common arguments
-ARG NODE_VERSION=20.15.0
-ARG PLAYWRIGHT_VERSION=1.45.1
+ARG NODE_VERSION="20.15.0"
+ARG PLAYWRIGHT_VERSION="1.45.1"
 ARG NODE_IMAGE="node:${NODE_VERSION}-bookworm"
-ARG PLAYWRIGHT_IMAGE="mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-noble-amd64"
-ARG CURL_IMPERSONATE_TAG=0.6.1-chrome-slim-bullseye
-ARG PLAYWRIGHT_BROWSERS_PATH=/home/pw-browsers
-ARG PNPM_VERSION=9.5.0
+ARG PLAYWRIGHT_IMAGE="mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-noble"
+ARG PLAYWRIGHT_BROWSERS_PATH="/home/pw-browsers"
+ARG PNPM_VERSION="9.5.0"
 
-FROM lwthiker/curl-impersonate:${CURL_IMPERSONATE_TAG} AS curl-impersonate
 FROM ${PLAYWRIGHT_IMAGE} AS playwright
 ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 
@@ -18,8 +16,24 @@ ENV USER=root
 
 # Install necessary packages
 RUN apt-get update && \
-    apt-get install --no-install-recommends -y curl gnupg2 gnupg libnss3 nss-plugin-pem ca-certificates lsb-release x11vnc xvfb fluxbox && \
+    apt-get install --no-install-recommends -y tar curl gnupg2 gnupg libnss3 nss-plugin-pem ca-certificates lsb-release x11vnc xvfb fluxbox && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
+
+ARG TARGETPLATFORM
+ARG BUILDARCH
+
+
+# Install curl-impersonate
+ARG CURL_IMPERSONATE_VERSION="0.6.1"
+RUN \
+    if [ "$TARGETPLATFORM" = 'linux/arm64' ] || [ "$BUILDARCH" = 'arm64' ]; then CURL_IMPERSONATE_ARCH="aarch64"; else CURL_IMPERSONATE_ARCH="x86_64"; fi && \
+    CURL_IMPERSONATE_FILENAME="curl-impersonate-v${CURL_IMPERSONATE_VERSION}.v$CURL_IMPERSONATE_ARCH-linux-gnu.tar.gz" && \
+    curl -L -o /tmp/$CURL_IMPERSONATE_FILENAME "https://github.com/lwthiker/curl-impersonate/releases/download/${CURL_IMPERSONATE_VERSION}/$CURL_IMPERSONATE_FILENAME" && \
+    mkdir -p /opt/curl-impersonate && \
+    tar -xzf /tmp/$CURL_IMPERSONATE_FILENAME -C /opt/curl-impersonate && \
+    rm /tmp/$CURL_IMPERSONATE_FILENAME
+
+ENV PATH="/opt/curl-impersonate:$PATH"
 
 # Install pnpm
 RUN corepack enable
@@ -28,10 +42,12 @@ RUN curl -fsSL https://get.pnpm.io/install.sh | ENV="$HOME/.shrc" SHELL="$(which
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
-# Install OpenResty
+# Install openresty
 RUN curl -L https://openresty.org/package/pubkey.gpg | apt-key add -
-RUN echo "deb http://openresty.org/package/debian $(lsb_release -sc) openresty" > /etc/apt/sources.list.d/openresty.list
+RUN if [ "$TARGETPLATFORM" = 'linux/arm64' ] || [ "$BUILDARCH" = 'arm64' ]; then OPENRESTY_PATH="/arm64/debian"; else OPENRESTY_PATH="/debian"; fi && \
+    echo "deb http://openresty.org/package$OPENRESTY_PATH $(lsb_release -sc) openresty" > /etc/apt/sources.list.d/openresty.list;
 
+# Install lavinmq
 RUN curl -fsSL https://packagecloud.io/cloudamqp/lavinmq/gpgkey | gpg --dearmor -o /usr/share/keyrings/lavinmq.gpg
 RUN . /etc/os-release \
     && echo "deb [signed-by=/usr/share/keyrings/lavinmq.gpg] https://packagecloud.io/cloudamqp/lavinmq/${ID} ${VERSION_CODENAME} main" | tee /etc/apt/sources.list.d/lavinmq.list
@@ -45,17 +61,7 @@ RUN apt-get update && \
 
 ENV PATH="/usr/local/openresty/bin:$PATH"
 
-RUN openresty -v
-
 WORKDIR /usr/src/app
-
-COPY --from=curl-impersonate /build/out/curl-impersonate* /usr/local/bin
-COPY --from=curl-impersonate /build/out/libcurl-impersonate* /usr/local/lib
-
-RUN ldconfig
-
-COPY --from=curl-impersonate /build/out /build/out
-COPY --from=curl-impersonate /build/out/curl_* /usr/local/bin/
 
 COPY --from=playwright ${PLAYWRIGHT_BROWSERS_PATH} ${PLAYWRIGHT_BROWSERS_PATH}
 

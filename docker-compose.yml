@@ -1,7 +1,6 @@
 services:
   web-impersonate:
     image: web-impersonate
-    platform: linux/amd64
     build:
       context: .
     volumes:
