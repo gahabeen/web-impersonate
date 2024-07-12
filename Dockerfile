@@ -2,13 +2,10 @@
 ARG NODE_VERSION="20.15.0"
 ARG PLAYWRIGHT_VERSION="1.45.1"
 ARG NODE_IMAGE="node:${NODE_VERSION}-bookworm"
-ARG PLAYWRIGHT_IMAGE="mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-noble"
-
-FROM ${PLAYWRIGHT_IMAGE} AS playwright
-ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 
 FROM ${NODE_IMAGE} AS node
 
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 ENV DEBIAN_FRONTEND=noninteractive
 ENV USER=root
 
@@ -36,6 +33,9 @@ ARG PNPM_VERSION="9.5.0"
 ENV PNPM_VERSION=${PNPM_VERSION}
 RUN npm install -g pnpm@${PNPM_VERSION}
 
+# Install playwright
+RUN npx playwright@${PLAYWRIGHT_VERSION} install --with-deps chromium firefox webkit
+
 # Install openresty
 RUN curl -L https://openresty.org/package/pubkey.gpg | gpg --dearmor -o /usr/share/keyrings/openresty.gpg
 RUN if [ "$TARGETPLATFORM" = 'linux/arm64' ]; then OPENRESTY_PATH="/arm64/debian"; else OPENRESTY_PATH="/debian"; fi && \
@@ -58,9 +58,6 @@ RUN apt-get update && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ENV PATH="/usr/local/openresty/bin:$PATH"
-
-COPY --from=playwright /ms-playwright /ms-playwright
-ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
 WORKDIR /usr/src/app
 
