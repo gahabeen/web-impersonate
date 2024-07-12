@@ -14,11 +14,24 @@ ENV USER=root
 
 # Install necessary packages
 RUN apt-get update && \
-    apt-get install --no-install-recommends -y tar curl gnupg2 gnupg libnss3 nss-plugin-pem ca-certificates lsb-release x11vnc xvfb fluxbox && \
+    apt-get install --no-install-recommends -y tar p7zip curl gnupg2 gnupg libnss3 nss-plugin-pem ca-certificates lsb-release x11vnc xvfb fluxbox && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ARG TARGETPLATFORM
 ARG BUILDARCH
+
+# Install ungoogled-chromium
+RUN if [ "$TARGETPLATFORM" = 'linux/arm64' ];  then; \
+    curl -L -o /tmp/ungoogled-chromium.dmg "https://github.com/claudiodekker/ungoogled-chromium-macos/releases/download/126.0.6478.126-1.1/ungoogled-chromium_126.0.6478.126-1.1_arm64-macos-signed.dmg" && \
+    7z x /tmp/ungoogled-chromium.dmg -o /extracted && \
+    cp /extracted/ungoogled-chromium/Chromium.app/Contents/MacOS/Chromium /usr/local/bin/chromium && \
+    cp /extracted/ungoogled-chromium/Chromium.app/Contents/MacOS/chromedriver /usr/local/bin/chromedriver && \
+    rm -rf /extracted && \
+    rm /tmp/ungoogled-chromium; \
+    fi
+
+    # else UNGOOGLED_CHROMIUM="https://github.com/clickot/ungoogled-chromium-binaries/releases/download/100.0.4896.127-1/ungoogled-chromium-driver_100.0.4896.127-1.unportable1_amd64.deb"; fi && \
+    #  echo "deb http://openresty.org/package${OPENRESTY_PATH} $(lsb_release -sc) openresty" > /etc/apt/sources.list.d/openresty.list;
 
 # Install curl-impersonate
 ARG CURL_IMPERSONATE_VERSION="0.6.1"
