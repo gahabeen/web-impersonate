@@ -41,7 +41,7 @@ fi
 
 if [ "$START_HAPROXY" = true ]; then
   echo "Starting HAProxy server..."
-  mkdir -p /var/log/openresty
+  mkdir -p /usr/local/etc/haproxy
 
   if [ -d "/mnt/haproxy" ]; then
     echo "Copying found haproxy folder..."
