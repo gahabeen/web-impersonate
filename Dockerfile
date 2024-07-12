@@ -14,26 +14,12 @@ ENV USER=root
 
 # Install necessary packages
 RUN apt-get update && \
-    apt-get install --no-install-recommends -y tar p7zip curl gnupg2 gnupg libnss3 nss-plugin-pem ca-certificates lsb-release x11vnc xvfb fluxbox && \
+    apt-get install --no-install-recommends -y tar gettext-base p7zip curl gnupg2 gnupg libnss3 nss-plugin-pem ca-certificates lsb-release x11vnc xvfb fluxbox && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ARG TARGETPLATFORM
 ARG BUILDARCH
 
-# Install ungoogled-chromium
-RUN if [ "$TARGETPLATFORM" = 'linux/arm64' ];  then; \
-    curl -L -o /tmp/ungoogled-chromium.dmg "https://github.com/claudiodekker/ungoogled-chromium-macos/releases/download/126.0.6478.126-1.1/ungoogled-chromium_126.0.6478.126-1.1_arm64-macos-signed.dmg" && \
-    7z x /tmp/ungoogled-chromium.dmg -o /extracted && \
-    cp /extracted/ungoogled-chromium/Chromium.app/Contents/MacOS/Chromium /usr/local/bin/chromium && \
-    cp /extracted/ungoogled-chromium/Chromium.app/Contents/MacOS/chromedriver /usr/local/bin/chromedriver && \
-    rm -rf /extracted && \
-    rm /tmp/ungoogled-chromium; \
-    fi
-
-    # else UNGOOGLED_CHROMIUM="https://github.com/clickot/ungoogled-chromium-binaries/releases/download/100.0.4896.127-1/ungoogled-chromium-driver_100.0.4896.127-1.unportable1_amd64.deb"; fi && \
-    #  echo "deb http://openresty.org/package${OPENRESTY_PATH} $(lsb_release -sc) openresty" > /etc/apt/sources.list.d/openresty.list;
-
-# Install curl-impersonate
 ARG CURL_IMPERSONATE_VERSION="0.6.1"
 RUN \
     if [ "$TARGETPLATFORM" = 'linux/arm64' ]; then CURL_IMPERSONATE_ARCH="aarch64"; else CURL_IMPERSONATE_ARCH="x86_64"; fi && \
@@ -55,16 +41,21 @@ ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 
 # Install openresty
-RUN curl -L https://openresty.org/package/pubkey.gpg | apt-key add -
-RUN if [ "$TARGETPLATFORM" = 'linux/arm64' ]; then OPENRESTY_PATH="/arm64/debian"; else OPENRESTY_PATH="/debian"; fi && echo "deb http://openresty.org/package${OPENRESTY_PATH} $(lsb_release -sc) openresty" > /etc/apt/sources.list.d/openresty.list;
+RUN curl -L https://openresty.org/package/pubkey.gpg | gpg --dearmor -o /usr/share/keyrings/openresty.gpg
+RUN if [ "$TARGETPLATFORM" = 'linux/arm64' ]; then OPENRESTY_PATH="/arm64/debian"; else OPENRESTY_PATH="/debian"; fi && \
+ echo deb "[signed-by=/usr/share/keyrings/openresty.gpg]" http://openresty.org/package${OPENRESTY_PATH} $(lsb_release -sc) openresty > /etc/apt/sources.list.d/openresty.list;
+
+# Install haproxy
+RUN curl https://haproxy.debian.net/bernat.debian.org.gpg | gpg --dearmor -o /usr/share/keyrings/haproxy.debian.net.gpg
+RUN echo deb "[signed-by=/usr/share/keyrings/haproxy.debian.net.gpg]" http://haproxy.debian.net bookworm-backports-3.0 main > /etc/apt/sources.list.d/haproxy.list
+RUN apt-get update && apt-get install --no-install-recommends -y libjemalloc2 liblua5.3-0 libopentracing-c-wrapper0 libopentracing1 haproxy=3.0.\*
 
 # Install lavinmq
 RUN curl -fsSL https://packagecloud.io/cloudamqp/lavinmq/gpgkey | gpg --dearmor -o /usr/share/keyrings/lavinmq.gpg
 RUN . /etc/os-release \
     && echo "deb [signed-by=/usr/share/keyrings/lavinmq.gpg] https://packagecloud.io/cloudamqp/lavinmq/${ID} ${VERSION_CODENAME} main" | tee /etc/apt/sources.list.d/lavinmq.list
 
-RUN apt-get update && \
-    apt-cache madison openresty
+RUN apt-get update && apt-cache madison openresty
 
 RUN apt-get update && \
     apt-get install --no-install-recommends -y lavinmq openresty && \
@@ -107,14 +98,18 @@ ENV VNC_PORT=${VNC_PORT}
 ARG VNC_PASSWORD=123456
 ENV VNC_PASSWORD=${VNC_PASSWORD}
 
-ARG NGINX_BASE_PORT=3456
+ARG NGINX_BASE_PORT
 ENV NGINX_BASE_PORT=${NGINX_BASE_PORT}
+
+ARG HAPROXY_BASE_PORT
+ENV HAPROXY_BASE_PORT=${HAPROXY_BASE_PORT}
 
 ARG CMD="tail -f /dev/null"
 ENV CMD=${CMD}
 
 EXPOSE ${NGINX_BASE_PORT}
 EXPOSE ${VNC_PORT}
+EXPOSE ${HAPROXY_BASE_PORT}
 
 # Expose LavinMQ ports
 EXPOSE 5671

@@ -29,6 +29,7 @@ make run-nginx
 - playwright: 1.45.1
 - lavinmq: latest
 - openresty (nginx)
+- haproxy 3.0.*
 - vnc
 
 **Arguments**

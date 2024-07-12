@@ -14,6 +14,7 @@ services:
         START_VNC: ${START_VNC:-false}
         START_XVBF: ${START_XVBF:-false}
         START_NGINX: ${START_NGINX:-false}
+        START_HAPROXY: ${START_HAPROXY:-false}
     ports:
       - "5900:5900" # vnc
       - "15672:15672" # lavinmq
