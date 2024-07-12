@@ -32,8 +32,6 @@ RUN \
 ENV PATH="/opt/curl-impersonate:$PATH"
 
 # Install pnpm
-RUN corepack enable
-
 ARG PNPM_VERSION="9.5.0"
 ENV PNPM_VERSION=${PNPM_VERSION}
 RUN curl -fsSL https://get.pnpm.io/install.sh | ENV="$HOME/.shrc" SHELL="$(which sh)" sh -
@@ -91,6 +89,9 @@ ENV START_VNC=${START_VNC}
 
 ARG START_NGINX=false
 ENV START_NGINX=${START_NGINX}
+
+ARG START_HAPROXY=false
+ENV START_HAPROXY=${START_HAPROXY}
 
 ARG VNC_PORT=5900
 ENV VNC_PORT=${VNC_PORT}
