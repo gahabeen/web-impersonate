@@ -34,9 +34,7 @@ ENV PATH="/opt/curl-impersonate:$PATH"
 # Install pnpm
 ARG PNPM_VERSION="9.5.0"
 ENV PNPM_VERSION=${PNPM_VERSION}
-RUN curl -fsSL https://get.pnpm.io/install.sh | ENV="$HOME/.shrc" SHELL="$(which sh)" sh -
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
+RUN npm install -g pnpm@${PNPM_VERSION}
 
 # Install openresty
 RUN curl -L https://openresty.org/package/pubkey.gpg | gpg --dearmor -o /usr/share/keyrings/openresty.gpg
