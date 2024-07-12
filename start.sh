@@ -44,14 +44,14 @@ if [ "$START_HAPROXY" = true ]; then
   mkdir -p /usr/local/etc/haproxy
 
   if [ -d "/mnt/haproxy" ]; then
-    echo "Copying found haproxy folder..."
+    echo "Copying found HAProxy folder..."
     cp -rv /mnt/haproxy/* /usr/local/etc/haproxy
   fi
 
-  if [ -d "/usr/local/etc/haproxy/haproxy.cfg" ]; then
+  if [ -f "/usr/local/etc/haproxy/haproxy.cfg" ]; then
     echo "Applying ENV variables to haproxy.cfg..."
     cp /usr/local/etc/haproxy/haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg.bak
-    envsubst </usr/local/etc/haproxy/haproxy.cfg >/usr/local/etc/haproxy/haproxy.cfg
+    envsubst </usr/local/etc/haproxy/haproxy.cfg.bak >/usr/local/etc/haproxy/haproxy.cfg
   fi
 
   haproxy -f /usr/local/etc/haproxy/haproxy.cfg &
