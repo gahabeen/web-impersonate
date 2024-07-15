@@ -10,13 +10,18 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV USER=root
 
 # Install necessary packages
-RUN apt-get update && \
-    apt-get install --no-install-recommends -y tar gettext-base p7zip curl gnupg2 gnupg libnss3 nss-plugin-pem ca-certificates lsb-release x11vnc xvfb fluxbox && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends tar gettext-base p7zip curl gnupg2 gnupg libnss3 nss-plugin-pem ca-certificates lsb-release x11vnc xvfb fluxbox
 
 ARG TARGETPLATFORM
 ARG BUILDARCH
 
+# Install ffmpeg
+RUN apt-get update && apt-get install -y --no-install-recommends ffmpeg
+
+# Install sqlite3
+RUN apt-get install --no-install-recommends -y sqlite3
+
+# Install curl-impersonate
 ARG CURL_IMPERSONATE_VERSION="0.6.1"
 RUN \
     if [ "$TARGETPLATFORM" = 'linux/arm64' ]; then CURL_IMPERSONATE_ARCH="aarch64"; else CURL_IMPERSONATE_ARCH="x86_64"; fi && \
@@ -52,17 +57,16 @@ RUN . /etc/os-release \
     && echo "deb [signed-by=/usr/share/keyrings/lavinmq.gpg] https://packagecloud.io/cloudamqp/lavinmq/${ID} ${VERSION_CODENAME} main" | tee /etc/apt/sources.list.d/lavinmq.list
 
 RUN apt-get update && apt-cache madison openresty
-
-RUN apt-get update && \
-    apt-get install --no-install-recommends -y lavinmq openresty && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
-
+RUN apt-get install --no-install-recommends -y lavinmq openresty
 ENV PATH="/usr/local/openresty/bin:$PATH"
 
-WORKDIR /usr/src/app
+# Clean up
+RUN rm -rf /var/lib/apt/lists/*
 
 # Stage 3: Environment setup
 FROM node AS release
+
+WORKDIR /usr/src/app
 
 ARG DISPLAY=:99
 ENV DISPLAY=${DISPLAY}
