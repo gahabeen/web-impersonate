@@ -1,10 +1,4 @@
 .PHONY: build
 
 build:
-	docker-compose build
-
-run:
-	CMD="echo \"🦄 Web Impersonate is running!\"" docker-compose up
-
-run-nginx:
-	START_NGINX="true" docker-compose up
+	docker build --build-arg CMD="echo \"🦄 Web Impersonate is running!\"" -t web-impersonate .
