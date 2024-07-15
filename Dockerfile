@@ -10,7 +10,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV USER=root
 
 # Install necessary packages, ffmpeg and sqlite3
-RUN apt-get update && apt-get install -y --no-install-recommends tar gettext-base p7zip curl gnupg2 gnupg libnss3 nss-plugin-pem ca-certificates lsb-release x11vnc xvfb fluxbox ffmpeg sqlite3
+RUN apt-get update && apt-get install -y --no-install-recommends tar gettext-base rsyslog \
+ p7zip curl gnupg2 gnupg libnss3 nss-plugin-pem ca-certificates lsb-release x11vnc xvfb fluxbox ffmpeg sqlite3
 
 ARG TARGETPLATFORM
 ARG BUILDARCH

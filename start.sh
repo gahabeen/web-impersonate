@@ -39,6 +39,20 @@ else
   echo "NGINX server disabled."
 fi
 
+if [ "$START_RSYSLOG" = true ]; then
+  echo "Starting rsyslog server..."
+  if [ -d "/mnt/rsyslog" ]; then
+    echo "Copying found HAProxy folder..."
+    rm -rf /etc/rsyslog.d/*-haproxy.conf # Remove old config
+    cp -rv /mnt/rsyslog/* /etc/rsyslog.d
+  fi
+
+  rsyslogd -n &
+  echo "rsyslog server started."
+else
+  echo "rsyslog server disabled."
+fi
+
 if [ "$START_HAPROXY" = true ]; then
   echo "Starting HAProxy server..."
   mkdir -p /usr/local/etc/haproxy
