@@ -1,8 +1,8 @@
 #!/bin/bash
 if [ "$START_XVBF" = true ]; then
   # Start X virtual framebuffer
-  echo "Xvfb started on $DISPLAY ($SCREEN_RESOLUTIONx$SCREEN_DEPTH)."
-  Xvfb $DISPLAY -ac -screen 0 $SCREEN_RESOLUTIONx$SCREEN_DEPTH -nolisten tcp &
+  echo "Xvfb started on $DISPLAY (${SCREEN_RESOLUTION}x${SCREEN_DEPTH})."
+  Xvfb $DISPLAY -ac -screen 0 ${SCREEN_RESOLUTION}x${SCREEN_DEPTH} -nolisten tcp &
 
   # Start Fluxbox window manager
   fluxbox >/dev/null 2>&1 &
