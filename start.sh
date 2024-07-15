@@ -1,4 +1,20 @@
 #!/bin/bash
+if [ -d "/mnt/env" ]; then
+  echo "Copying found ENV folder..."
+  cp -rv /mnt/env /usr/local/etc/env
+fi
+
+if [ -d "/usr/local/etc/env" ]; then
+  if [ -f "/usr/local/etc/env/.default.env" ]; then
+    set -a && . "/usr/local/etc/env/.default.env" && set +a
+  fi
+
+  for envfile in /usr/local/etc/env/.env*; do
+    set -a && . "$envfile" && set +a
+    rm -f "$envfile"
+  done
+fi
+
 if [ "$START_XVBF" = true ]; then
   # Start X virtual framebuffer
   echo "Xvfb started on $DISPLAY (${SCREEN_RESOLUTION}x${SCREEN_DEPTH})."
@@ -28,11 +44,6 @@ if [ "$START_NGINX" = true ]; then
   echo "Starting NGINX server..."
   mkdir -p /var/log/openresty
 
-  if [ -d "/mnt/nginx" ]; then
-    echo "Copying found nginx folder..."
-    cp -rv /mnt/nginx/* /usr/local/openresty/nginx
-  fi
-
   openresty -g 'daemon off;' &
   echo "NGINX server started."
 else
@@ -41,9 +52,10 @@ fi
 
 if [ "$START_RSYSLOG" = true ]; then
   echo "Starting rsyslog server..."
+  # rm -rf /etc/rsyslog.d/*-haproxy.conf # Remove old config
+
   if [ -d "/mnt/rsyslog" ]; then
     echo "Copying found HAProxy folder..."
-    rm -rf /etc/rsyslog.d/*-haproxy.conf # Remove old config
     cp -rv /mnt/rsyslog/* /etc/rsyslog.d
   fi
 
