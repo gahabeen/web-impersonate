@@ -1,19 +1,27 @@
 #!/bin/bash
-if [ -d "/mnt/env" ]; then
-  echo "Copying found ENV folder..."
-  cp -rv /mnt/env /usr/local/etc/env
-fi
+env >/tmp/current.env
 
-if [ -d "/usr/local/etc/env" ]; then
-  if [ -f "/usr/local/etc/env/.default.env" ]; then
-    set -a && . "/usr/local/etc/env/.default.env" && set +a
+load_env_files() {
+  local dir="$1"
+  if [ -d "$dir" ]; then
+    # Load default environment file if it exists
+    [ -f "$dir/.default.env" ] && set -a && . "$dir/.default.env" && set +a
+
+    # Load and remove other environment files
+    if compgen -G "$dir/.env*" >/dev/null; then
+      for envfile in "$dir"/.env*; do
+        [ -f "$envfile" ] && set -a && . "$envfile" && set +a && rm -f "$envfile"
+      done
+    fi
   fi
+}
 
-  for envfile in /usr/local/etc/env/.env*; do
-    set -a && . "$envfile" && set +a
-    rm -f "$envfile"
-  done
-fi
+load_env_files "/usr/local/etc/env"
+load_env_files "/mnt/env"
+
+while read line; do
+  export "$line"
+done </tmp/current.env
 
 if [ "$START_XVBF" = true ]; then
   # Start X virtual framebuffer
