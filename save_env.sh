@@ -9,7 +9,7 @@ echo '#!/bin/bash' >"$ENV_FILE"
 # Save all current environment variables
 env | while IFS='=' read -r key value; do
   # Properly quote the value to handle multi-line and special characters
-  printf 'export %s=%q\n' "$key" "$value" >>"$ENV_FILE"
+  printf 'export %s=%q\n' "$key" "${value//$'\n'/\\n}" >>"$ENV_FILE"
 done
 
 # Make the file executable
