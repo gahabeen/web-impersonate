@@ -1,5 +1,5 @@
 #!/bin/bash
-env >/tmp/current.env
+./save_env.sh
 
 load_env_files() {
   local dir="$1"
@@ -19,9 +19,7 @@ load_env_files() {
 load_env_files "/usr/local/etc/env"
 load_env_files "/mnt/env"
 
-while read line; do
-  export "$line"
-done </tmp/current.env
+source /tmp/current_env.sh
 
 if [ "$START_XVBF" = true ]; then
   # Start X virtual framebuffer

@@ -63,6 +63,8 @@ FROM node AS release
 WORKDIR /usr/src/app
 
 COPY --chown=root:root ./start.sh .
+COPY --chown=root:root ./save_env.sh .
 RUN chmod +x ./start.sh
+RUN chmod +x ./save_env.sh
 
 ENTRYPOINT ["./start.sh"]
