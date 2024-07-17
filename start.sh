@@ -58,7 +58,7 @@ fi
 
 if [ "$START_RSYSLOG" = true ]; then
   echo "Starting rsyslog server..."
-  # rm -rf /etc/rsyslog.d/*-haproxy.conf # Remove old config
+  rm -rf /etc/rsyslog.d/*-haproxy.conf # Remove old config
 
   if [ -d "/mnt/rsyslog" ]; then
     echo "Copying found HAProxy folder..."
