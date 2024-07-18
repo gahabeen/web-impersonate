@@ -3,6 +3,7 @@
 
 load_env_files() {
   local dir="$1"
+  local remove_files="${2:-true}"
   if [ -d "$dir" ]; then
     # Load default environment file if it exists
     [ -f "$dir/.default.env" ] && set -a && . "$dir/.default.env" && set +a
@@ -10,14 +11,17 @@ load_env_files() {
     # Load and remove other environment files
     if compgen -G "$dir/.env*" >/dev/null; then
       for envfile in "$dir"/.env*; do
-        [ -f "$envfile" ] && set -a && . "$envfile" && set +a && rm -f "$envfile"
+        [ -f "$envfile" ] && set -a && . "$envfile" && set +a
+         if [ "$remove_files" = true ]; then
+            rm -f "$envfile"
+          fi
       done
     fi
   fi
 }
 
 load_env_files "/usr/local/etc/env"
-load_env_files "/mnt/env"
+load_env_files "/mnt/env" false
 
 source /tmp/current_env.sh
 
