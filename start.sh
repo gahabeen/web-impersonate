@@ -53,7 +53,7 @@ fi
 
 if [ "$START_VNC" = true ]; then
   # Start VNC server
-  x11vnc -display $DISPLAY -quiet -noxrecord -nodpms -noxfixes -noxdamage -forever -passwd $VNC_PASSWORD -rfbport $VNC_PORT &
+  x11vnc -display $DISPLAY -quiet -noxrecord -noxfixes -noxdamage -forever -passwd $VNC_PASSWORD -rfbport $VNC_PORT -o /dev/null &
   echo "$BASE_IMAGE_LABEL 🟢 [VNC] started (on $DISPLAY, PORT: $VNC_PORT)."
 
   # Ensure VNC server has started before proce´eding
@@ -76,7 +76,7 @@ if [ "$START_RSYSLOG" = true ]; then
 
   if [ -d "/mnt/rsyslog" ]; then
     echo "$BASE_IMAGE_LABEL 🟢 [RSYSLOG] copying found rsyslog /mnt/rsyslog"
-    cp -rv /mnt/rsyslog/* /etc/rsyslog.d
+    cp -r /mnt/rsyslog/* /etc/rsyslog.d
   else
     echo "$BASE_IMAGE_LABEL ⚪ [RSYSLOG] no /mnt/rsyslog provided"
   fi
@@ -92,7 +92,7 @@ if [ "$START_HAPROXY" = true ]; then
 
   if [ -d "/mnt/haproxy" ]; then
     echo "$BASE_IMAGE_LABEL 🟢 [HAPROXY] copying found HAProxy /mnt/haproxy"
-    cp -rv /mnt/haproxy/* /usr/local/etc/haproxy
+    cp -r /mnt/haproxy/* /usr/local/etc/haproxy
   else
     echo "$BASE_IMAGE_LABEL ⚪ [HAPROXY] no /mnt/haproxy provided"
   fi
@@ -123,7 +123,7 @@ if [ "$START_TINYPROXY" = true ]; then
 
   if [ -d "/mnt/tinyproxy" ]; then
     echo "$BASE_IMAGE_LABEL 🟢 [TINYPROXY] copying found tinyproxy /mnt/tinyproxy"
-    cp -rv /mnt/tinyproxy/* /etc/tinyproxy
+    cp -r /mnt/tinyproxy/* /etc/tinyproxy
   else
     echo "$BASE_IMAGE_LABEL ⚪ [TINYPROXY] no /mnt/tinyproxy provided"
   fi
