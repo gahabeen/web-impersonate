@@ -9,9 +9,9 @@ ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 ENV DEBIAN_FRONTEND=noninteractive
 ENV USER=root
 
-# Install necessary packages, ffmpeg and sqlite3
+# Install necessary packages, ffmpeg, tinyproxy and sqlite3
 RUN apt-get update && apt-get install -y --no-install-recommends tar gettext-base rsyslog \
- p7zip curl gnupg2 gnupg libnss3 nss-plugin-pem ca-certificates lsb-release x11vnc xvfb fluxbox ffmpeg sqlite3
+ p7zip curl gnupg2 gnupg libnss3 nss-plugin-pem ca-certificates lsb-release x11vnc xvfb fluxbox ffmpeg sqlite3 tinyproxy
 
 ARG TARGETPLATFORM
 ARG BUILDARCH
@@ -63,8 +63,8 @@ FROM node AS release
 WORKDIR /usr/src/app
 
 COPY --chown=root:root ./start.sh .
-COPY --chown=root:root ./save_env.sh .
+COPY --chown=root:root ./backup_env.sh .
 RUN chmod +x ./start.sh
-RUN chmod +x ./save_env.sh
+RUN chmod +x ./backup_env.sh
 
 ENTRYPOINT ["./start.sh"]

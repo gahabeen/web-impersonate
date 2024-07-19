@@ -1,4 +1,7 @@
 .PHONY: build
 
 build:
-	docker build --build-arg CMD="echo \"🦄 Web Impersonate is running!\"" -t web-impersonate .
+	docker build -t web-impersonate .
+
+run:
+	 docker run --rm -it -e CMD="echo \"🦄 Web Impersonate is running!\"" web-impersonate

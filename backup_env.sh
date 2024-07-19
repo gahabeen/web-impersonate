@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # File to save the environment variables
-ENV_FILE="/tmp/current_env.sh"
+ENV_FILE="/tmp/backup_env.sh"
 
 # Start with a shebang
 echo '#!/bin/bash' >"$ENV_FILE"
@@ -14,5 +14,3 @@ done
 
 # Make the file executable
 chmod +x "$ENV_FILE"
-
-echo "Environment variables saved to $ENV_FILE"
