@@ -24,12 +24,17 @@ RUN \
     curl -L -o /tmp/$CURL_IMPERSONATE_FILENAME "https://github.com/lwthiker/curl-impersonate/releases/download/v${CURL_IMPERSONATE_VERSION}/${CURL_IMPERSONATE_FILENAME}" && \
     mkdir -p /opt/curl-impersonate && \
     tar -xzf /tmp/$CURL_IMPERSONATE_FILENAME -C /opt/curl-impersonate && \
-    rm /tmp/$CURL_IMPERSONATE_FILENAME
+    rm /tmp/$CURL_IMPERSONATE_FILENAME && \
+    LIBCURL_IMPERSONATE_FILENAME="libcurl-impersonate-v${CURL_IMPERSONATE_VERSION}.${CURL_IMPERSONATE_ARCH}-linux-gnu.tar.gz" && \
+    curl -L -o /tmp/$LIBCURL_IMPERSONATE_FILENAME "https://github.com/lwthiker/curl-impersonate/releases/download/v${CURL_IMPERSONATE_VERSION}/${LIBCURL_IMPERSONATE_FILENAME}" && \
+    mkdir -p /opt/libcurl-impersonate && \
+    tar -xzf /tmp/$LIBCURL_IMPERSONATE_FILENAME -C /opt/libcurl-impersonate && \
+    rm /tmp/$LIBCURL_IMPERSONATE_FILENAME
 
 ENV PATH="/opt/curl-impersonate:$PATH"
 
 # Install pnpm
-ARG PNPM_VERSION="9.5.0"
+ARG PNPM_VERSION="9.6.0"
 ENV PNPM_VERSION=${PNPM_VERSION}
 RUN npm install -g pnpm@${PNPM_VERSION}
 
