@@ -9,12 +9,12 @@ load_env_files() {
   if [ -d "$dir" ]; then
     echo "[$BASE_IMAGE_LABEL] 🟢 [ENV] loading $dir"
     # Load default environment file if it exists
-    [ -f "$dir/.default.env" ] && set -a && . "$dir/.default.env" && set +a
+    [ -f "$dir/.default.env" ] && set -a && source "$dir/.default.env" && set +a
 
     # Load and remove other environment files
     if compgen -G "$dir/.env*" >/dev/null; then
       for envfile in "$dir"/.env*; do
-        [ -f "$envfile" ] && set -a && . "$envfile" && set +a
+        [ -f "$envfile" ] && set -a && source "$envfile" && set +a
         if [ "$remove_files" = true ]; then
           rm -f "$envfile"
         fi

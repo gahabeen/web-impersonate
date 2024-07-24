@@ -7,10 +7,10 @@ ENV_FILE="/tmp/backup_env.sh"
 echo '#!/bin/bash' >"$ENV_FILE"
 
 # Save all current environment variables
-env | while IFS='=' read -r key value; do
-  # Properly quote the value to handle multi-line and special characters
-  printf 'export %s=%q\n' "$key" "${value//$'\n'/\\n}" >>"$ENV_FILE"
-done
+while IFS='=' read -r key value; do
+  # Use declare -p to preserve the integrity of multi-line values
+  declare -p "$key" >>"$ENV_FILE" 2>/dev/null
+done < <(env)
 
 # Make the file executable
 chmod +x "$ENV_FILE"
